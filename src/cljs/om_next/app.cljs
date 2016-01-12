@@ -1,7 +1,7 @@
 (ns om-next.app
   (:require [goog.dom :as gdom]
             [om.next :as om :refer-macros [defui]]
-            [om.dom :as dom]))
+            [om.dom :as dom :include-macros true]))
 
 (enable-console-print!)
 
@@ -9,7 +9,7 @@
   (atom {:app/title "Animals"
          :animals/list [[1 "Ant"] [2 "Antelope"] [3 "Bird"] [4 "Cat"]]}))
 
-(defmulti read (fn [_ _ params] key))
+(defmulti read (fn [_ key _] key))
 
 (defmethod read :default
   [{:keys [state] :as env} key params]
@@ -24,7 +24,7 @@
 
 (defui AnimalsList
   static om/IQueryParams
-  (params [this] {:start 0 :end 10})
+  (params [this] {:start 0 :end 4})
   static om/IQuery
   (query [this] '[:app/title (:animals/list {:start ?start :end ?end})])
   Object
@@ -34,8 +34,8 @@
                      (dom/h2 nil title)
                      (apply dom/ul nil
                             (map (fn [[i name]]
-                                   (dom/li nil (str i ". " name))))
-                            list)))))
+                                   (dom/li nil (str i ". " name)))
+                                 list))))))
 
 (def reconciler
   (om/reconciler {:state app-state
